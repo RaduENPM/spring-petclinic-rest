@@ -1,0 +1,41 @@
+services:
+  web:
+    build: frontend/spring-petclinic-angular/
+    ports:
+      - "80:80"
+  backend:
+    image: spring-petclinic-backend
+    ports:
+      - "9966:9966"
+    environment:
+      - SPRING_PROFILES_ACTIVE=postgres,spring-data-jpa
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/petclinic
+      - SPRING_DATASOURCE_USER=petclinic
+      - SPRING_DATASOURCE_PASSWORD=petclinic
+      - POSTGRES_DB=petclinic
+      # - spring.profiles.active=postgres,spring-data-jpa
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: petclinic
+      POSTGRES_PASSWORD: petclinic
+      POSTGRES_DB: petclinic
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "petclinic"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+# volumes:
+#   postgres_data:
+# volumes:
+#   db-data:  # Определяем volume в корне файла
+
+
+
